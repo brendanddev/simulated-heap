@@ -1,0 +1,6 @@
+
+# Target directory
+target/
+
+# Compiled Java classes
+*.class
