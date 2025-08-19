@@ -40,10 +40,16 @@ public class SimulatedHeap {
                     // Create new block for leftover memory
                     // Its start is right after the allocated portion
                     MemoryBlock newBlock = new MemoryBlock(block.start + size, block.size - size);
+                    
+                    // Insert new block into list, right after the current block
                     blocks.add(blocks.indexOf(block) + 1, newBlock);
+                    // Reduce the size of the original block to match the requested size
                     block.size = size;
                 }
+                // Mark the block as allocated so it wont be used again until freed
                 block.free = false;
+
+                // Return the starting index as the 'pointer' to the allocated block
                 return block.start;
             }
         }
