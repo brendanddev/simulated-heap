@@ -23,8 +23,31 @@ public class SimulatedHeap {
         blocks.add(new MemoryBlock(0, size));
     }
 
+    /**
+     * Allocates a block of memory of the given size using the first-fit strategy.
+     * 
+     * @param size The number of bytes to allocate.
+     * @return The starting index of the allocated memory block, or null if allocation fails.
+     */
     public Integer malloc(int size) {
-        // TODO: Implement memory allocation logic
+        // Loop through all blocks to find a free block big enough
+        for (MemoryBlock block : blocks) {
+            // Check if the block is free and has enough size
+            if (block.free && block.size >= size) {
+                // If block is larger than requested size, split it
+                // Prevents wasting extra memory in a large block
+                if (block.size > size) {
+                    // Create new block for leftover memory
+                    // Its start is right after the allocated portion
+                    MemoryBlock newBlock = new MemoryBlock(block.start + size, block.size - size);
+                    blocks.add(blocks.indexOf(block) + 1, newBlock);
+                    block.size = size;
+                }
+                block.free = false;
+                return block.start;
+            }
+        }
+        // No suitable block found
         return null;
     }
 
@@ -32,7 +55,7 @@ public class SimulatedHeap {
         // TODO: Implement memory deallocation logic
     }
 
-    
+
 
 
 
