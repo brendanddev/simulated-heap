@@ -13,6 +13,46 @@ public class HeapVisualizer {
 
 
     /**
+     * Creates a visual bar chart representation of heap memory.
+     * Shows allocated blocks as █ and free blocks as ░
+     */
+    public void printHeapVisual() {
+
+        // Access blocks through the heap
+        List<MemoryBlock> blocks = heap.getBlocks();
+        
+        System.out.println("\nHEAP MEMORY VISUALIZATION");
+        System.out.println("═".repeat(60));
+        
+        // Print header with scale
+        System.out.print("Address: ");
+        for (int i = 0; i < Math.min(heap.getHeapSize(), 50); i += 5) {
+            System.out.printf("%-5d", i);
+        }
+        System.out.println();
+        
+        // Print visual representation
+        System.out.print("Memory:  ");
+        for (int addr = 0; addr < Math.min(heap.getHeapSize(), 50); addr++) {
+            boolean isAllocated = false;
+            for (MemoryBlock block : blocks) {
+                if (addr >= block.start && addr < block.start + block.size && !block.free) {
+                    isAllocated = true;
+                    break;
+                }
+            }
+            System.out.print(isAllocated ? "█" : "░");
+        }
+        if (heap.getHeapSize() > 50) {
+            System.out.print("... (+" + (heap.getHeapSize() - 50) + " more bytes)");
+        }
+        System.out.println();
+        System.out.println("Legend: █ = Allocated, ░ = Free");
+        
+        printHeapDetailed();
+    }
+
+    /**
      * Prints detailed information about each memory block
      */
     public void printHeapDetailed() {
