@@ -1,17 +1,21 @@
 package brendanddev;
 
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents each chunk of memory in the simulated heap.
  * 
- * Each MemoryBlock keeps track of its starting index in the heap array, the size of the memory block, and 
- * whether it is currently free or allocated.
+ * Each MemoryBlock keeps track of its starting index in the heap array, the size of the memory block, whether 
+ * it is currently free or allocated, and references to other blocks to simulate pointers.
  */
 public class MemoryBlock {
 
     int start;
     int size;
     boolean free;
+    // List of integer references to simulate pointers
+    public List<Integer> references = new ArrayList<>();
 
     /**
      * Constructs a new MemoryBlock.

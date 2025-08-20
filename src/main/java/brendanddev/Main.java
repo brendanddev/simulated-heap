@@ -10,6 +10,9 @@ public class Main {
 
         // Created a SimulatedHeap with 32 bytes of memory
         SimulatedHeap heap = new SimulatedHeap(32);
+
+        // Set allocation strategy to BEST_FIT
+        heap.setAllocationStrategy(AllocationStrategy.BEST_FIT);
         
         // Allocates 8 bytes of memory (first block)
         int a = heap.malloc(8);

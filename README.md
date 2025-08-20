@@ -9,8 +9,9 @@ Instead of letting the JVM handle allocation and garbage collection automaticall
 
 - **Custom Heap Simulation**: Backed by a simple `byte[]` array
 - **Memory Blocks**: Tracks allocated and free chunks of memory (`MemoryBlock` class)
-- **Manual Allocation (`malloc`)**: First-fit strategy with block splitting
+- **Manual Allocation (`malloc`)**: First-fit or Best-fit allocation strategies can be used to allocate memory blocks.
 - **Manual Deallocation (`free`)**: Supports freeing blocks and coalescing adjacent free blocks to reduce fragmentation.
+- **Simulated Pointers**:
 - **Heap Visualization**: `printHeap()` shows the current state of the heap for debugging.  
 - **Demo Program**: `Main.java` runs a sequence of allocations/frees to show heap changes in action.  
 
