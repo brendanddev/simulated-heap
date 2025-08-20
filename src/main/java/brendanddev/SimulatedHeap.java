@@ -124,13 +124,16 @@ public class SimulatedHeap {
         return heap[address];
     }
 
+    /**
+     * Prints the current state of the heap blocks for debugging.
+     */
+    public void printHeap() {
+        System.out.println("Heap Blocks:");
+        for (MemoryBlock block : blocks) {
+            System.out.println(block);
+        }
+    }
 
 
 
-
-
-
-
-
-    
 }
