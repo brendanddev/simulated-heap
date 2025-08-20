@@ -12,6 +12,8 @@ import java.util.Map;
 public class SimulatedHeap {
 
     private final HeapVisualizer visualizer = new HeapVisualizer(this);
+    private AllocationStrategy strategy = AllocationStrategy.FIRST_FIT;
+
     private final byte[] heap;
     private final List<MemoryBlock> blocks;
     private final Map<Integer, MemoryBlock> allocations = new HashMap<>();
@@ -49,12 +51,26 @@ public class SimulatedHeap {
     }
 
     /**
+     * Determines the allocation strategy to use for memory allocation.
+     */
+    public Integer malloc(int size) {
+        switch (strategy) {
+            case FIRST_FIT:
+                return mallocFirstFit(size);
+            case BEST_FIT:
+                return mallocBestFit(size);
+            default:
+                throw new IllegalStateException("Unknown allocation strategy: " + strategy);
+        }
+    }
+
+    /**
      * Allocates a block of memory of the given size using the first-fit strategy.
      * 
      * @param size The number of bytes to allocate.
      * @return The starting index of the allocated memory block, or null if allocation fails.
      */
-    public Integer malloc(int size) {
+    public Integer mallocFirstFit(int size) {
         // Loop through all blocks to find a free block big enough
         for (MemoryBlock block : blocks) {
             // Check if the block is free and has enough size
@@ -205,6 +221,15 @@ public class SimulatedHeap {
             }
         }
         return null;
+    }
+
+    /**
+     * Sets the allocation strategy for future malloc calls.
+     * 
+     * @param strategy The allocation strategy to use (FIRST_FIT or BEST_FIT).
+     */
+    public void setAllocationStrategy(AllocationStrategy strategy) {
+        this.strategy = strategy;
     }
 
     /**
