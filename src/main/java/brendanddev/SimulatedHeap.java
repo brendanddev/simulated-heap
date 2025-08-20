@@ -86,6 +86,52 @@ public class SimulatedHeap {
     }
 
     /**
+     * Allocates a block of memory of the given size using the best-fit strategy.
+     * 
+     * @param size The number of bytes to allocate.
+     * @return The starting index of the allocated memory block, or null if allocation fails.
+     */
+    public Integer mallocBestFit(int size) {
+
+        // Track best fitting block
+        MemoryBlock bestBlock = null;
+
+        // Loop through all blocks to find the smallest free block that fits the requested size
+        for (MemoryBlock block : blocks) {
+            // Check if the block is free and has enough size
+            if (block.free && block.size >= size) {
+                // If this is the first block or smaller than the current best, update bestBlock
+                if (bestBlock == null || block.size < bestBlock.size) {
+                    bestBlock = block;
+                }
+            }
+        }
+
+        // If no suitable block was found, return null
+        if (bestBlock == null) {
+            return null;
+        }
+
+        // If the best block is larger than requested size, split it
+        if (bestBlock.size > size) {
+            // Create new block for leftover memory
+            MemoryBlock newBlock = new MemoryBlock(bestBlock.start + size, bestBlock.size - size);
+            
+            // Insert new block into list, right after the best block
+            blocks.add(blocks.indexOf(bestBlock) + 1, newBlock);
+            // Reduce the size of the best block to match the requested size
+            bestBlock.size = size;
+        }
+
+        // Mark block as allocated
+        bestBlock.free = false;
+        allocations.put(bestBlock.start, bestBlock);
+
+        // Return the starting index as the 'pointer' to the allocated block
+        return bestBlock.start;
+    }
+
+    /**
      * Deallocates (frees) a block of memory previosuly allocated at the given address.
      * 
      * @param address The starting index of the memory block to free.
