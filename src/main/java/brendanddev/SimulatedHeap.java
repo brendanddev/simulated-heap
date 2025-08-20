@@ -110,6 +110,20 @@ public class SimulatedHeap {
         heap[address] = value;
     }
 
+    /**
+     * Reads a byte value from the simulated heap at the given address.
+     * 
+     * @param address The index in the heap array from which to read the value.
+     * @return The byte value stored at that address.
+     * @throws IllegalArgumentException if the address is out of bounds of the heap array.
+     */
+    public byte read(int address) {
+        if (address < 0 || address >= heap.length) {
+            throw new IllegalArgumentException("Invalid read address: " + address);
+        }
+        return heap[address];
+    }
+
 
 
 
