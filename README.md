@@ -1,9 +1,17 @@
 # Simulated Heap 
 
-A Java project that simulates manual memory management, similar to how low-level languages like C handle heap memory.  
+A project that simulates **manual memory management**, similar to how low-level languages like C handle heap memory.  
+Instead of letting the JVM handle allocation and garbage collection automatically, this project demonstrates how a heap could be built and managed by hand.
 
 ---
 
 ## Features 
+
+- **Custom Heap Simulation**: Backed by a simple `byte[]` array
+- **Memory Blocks**: Tracks allocated and free chunks of memory (`MemoryBlock` class)
+- **Manual Allocation (`malloc`)**: First-fit strategy with block splitting
+- **Manual Deallocation (`free`)**: Supports freeing blocks and coalescing adjacent free blocks to reduce fragmentation.
+- **Heap Visualization**: `printHeap()` shows the current state of the heap for debugging.  
+- **Demo Program**: `Main.java` runs a sequence of allocations/frees to show heap changes in action.  
 
 ---
