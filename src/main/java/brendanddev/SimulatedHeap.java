@@ -9,6 +9,7 @@ import java.util.List;
  */
 public class SimulatedHeap {
 
+    private final HeapVisualizer visualizer = new HeapVisualizer(this);
     private final byte[] heap;
     private final List<MemoryBlock> blocks;
 
@@ -143,6 +144,14 @@ public class SimulatedHeap {
             throw new IllegalArgumentException("Invalid read address: " + address);
         }
         return heap[address];
+    }
+
+    /**
+     * Prints a visual representation of the heap memory.
+     * See HeapVisualizer for details on how it visualizes the heap.
+     */
+    public void printHeap() {
+        visualizer.printHeapVisual();
     }
 
 }
