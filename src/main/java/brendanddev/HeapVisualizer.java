@@ -2,11 +2,26 @@ package brendanddev;
 
 import java.util.List;
 
+/**
+ * Provides methods to display the current state of the simulated heap.
+ * It prints a bar chart of the heap, showing allocated and free blocks of memory. 
+ * Detailed information about each memory block, including start address, size, status, and end address, is also displayed.
+ * Memory usage statistics are provided, including total heap size, allocated/free memory, utilization, and fragmentation.
+ * It also includes a memory map using ASCII art to visualize the layout of allocated and free blocks.
+ * 
+ * This class relies on the SimulatedHeap instance passed during construction
+ * and reads its list of MemoryBlock objects to generate the visualizations.
+ */
 public class HeapVisualizer {
 
-
+    // Reference to the SimulatedHeap instance for accessing memory blocks
     private final SimulatedHeap heap;
 
+    /**
+     * Constructs the HeapVisualizer with a reference to the SimulatedHeap.
+     * 
+     * @param heap The SimulatedHeap instance to visualize.
+     */
     public HeapVisualizer(SimulatedHeap heap) {
         this.heap = heap;
     }
