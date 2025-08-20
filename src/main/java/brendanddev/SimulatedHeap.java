@@ -124,8 +124,9 @@ public class SimulatedHeap {
      * @throws IllegalArgumentException if the address is out of bounds of the heap array.
      */
     public void write(int address, byte value) {
-        if (address < 0 || address >= heap.length) {
-            throw new IllegalArgumentException("Invalid write address: " + address);
+        MemoryBlock block = findBlockContaining(address);
+        if (block == null || block.free) {
+            throw new IllegalArgumentException("Cannot write to free or invalid address: " + address);
         }
         heap[address] = value;
     }
@@ -138,10 +139,26 @@ public class SimulatedHeap {
      * @throws IllegalArgumentException if the address is out of bounds of the heap array.
      */
     public byte read(int address) {
-        if (address < 0 || address >= heap.length) {
-            throw new IllegalArgumentException("Invalid read address: " + address);
+        MemoryBlock block = findBlockContaining(address);
+        if (block == null || block.free) {
+            throw new IllegalArgumentException("Cannot read from free or invalid address: " + address);
         }
         return heap[address];
+    }
+
+    /**
+     * Helper to find the block that contains a given address.
+     * 
+     * @param address The address to search for in the heap.
+     * @return The MemoryBlock that contains the address, or null if not found.
+     */
+    private MemoryBlock findBlockContaining(int address) {
+        for (MemoryBlock block : blocks) {
+            if (!block.free && address >= block.start && address < block.start + block.size) {
+                return block;
+            }
+        }
+        return null;
     }
 
     /**
