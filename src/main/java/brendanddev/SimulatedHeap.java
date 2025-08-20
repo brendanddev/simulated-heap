@@ -24,6 +24,27 @@ public class SimulatedHeap {
     }
 
     /**
+     * Returns the internal list of memory blocks.
+     */
+    public List<MemoryBlock> getBlocks() {
+        return blocks;
+    }
+
+    /**
+     * Returns the underlying byte array representing the heap memory.
+     */
+    public byte[] getHeapArray() {
+        return heap;
+    }
+
+    /** 
+     * Returns the total size of the heap in bytes.
+     */
+    public int getHeapSize() {
+        return heap.length;
+    }
+
+    /**
      * Allocates a block of memory of the given size using the first-fit strategy.
      * 
      * @param size The number of bytes to allocate.
@@ -123,17 +144,5 @@ public class SimulatedHeap {
         }
         return heap[address];
     }
-
-    /**
-     * Prints the current state of the heap blocks for debugging.
-     */
-    public void printHeap() {
-        System.out.println("Heap Blocks:");
-        for (MemoryBlock block : blocks) {
-            System.out.println(block);
-        }
-    }
-
-
 
 }
