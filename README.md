@@ -15,3 +15,23 @@ Instead of letting the JVM handle allocation and garbage collection automaticall
 - **Demo Program**: `Main.java` runs a sequence of allocations/frees to show heap changes in action.  
 
 ---
+
+## Example Usage  
+
+```java
+SimulatedHeap heap = new SimulatedHeap(32);
+
+int a = heap.malloc(8);   // allocate 8 bytes
+int b = heap.malloc(8);   // allocate another 8 bytes
+heap.printHeap();         // shows two allocated blocks + one free block
+
+heap.free(a);             // free the first 8-byte block
+heap.printHeap();
+
+int c = heap.malloc(4);   // allocate 4 bytes inside the first free region
+heap.printHeap();
+
+heap.free(b);             // free the second block
+heap.free(c);             // free the 4-byte block
+heap.printHeap();         // entire heap is free again
+```
