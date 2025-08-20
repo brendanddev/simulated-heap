@@ -57,8 +57,43 @@ public class SimulatedHeap {
         return null;
     }
 
+    /**
+     * Deallocates (frees) a block of memory previosuly allocated at the given address.
+     * 
+     * @param address The starting index of the memory block to free.
+     * @throws IllegalArgumentException if the address is invalid or the block is already free.
+     */
     public void free(int address) {
-        // TODO: Implement memory deallocation logic
+        for (int i = 0; i < blocks.size(); i++) {
+
+            MemoryBlock block = blocks.get(i);
+
+            // Find the block that starts at the given address and is currently allocated
+            if (block.start == address && !block.free) {
+                // Mark block as free
+                block.free = true;
+
+                // Merge (coalesce) with adjacent block if its free
+                if (i + 1 < blocks.size() && blocks.get(i + 1).free) {
+                    // Grow current block by adding the size of the next block
+                    block.size += blocks.get(i + 1).size;
+                    // Remove adjacent block since its merged
+                    blocks.remove(i + 1);
+                }
+
+                // Merge (coalesce) with previous block if its free
+                if (i > 0 && blocks.get(i - 1).free) {
+                    // Grow previous block to absorb current block
+                    blocks.get(i - 1).size += block.size;
+                    // Remove the current block since it's now merged into the previous one
+                    blocks.remove(i);
+                }
+                // Finished freeing
+                return;
+            }
+        }
+        // If no block was found at the given address, this is an invalid free
+        throw new IllegalArgumentException("Invalid free: No allocated block at address " + address);
     }
 
 
