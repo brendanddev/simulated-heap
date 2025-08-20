@@ -96,6 +96,19 @@ public class SimulatedHeap {
         throw new IllegalArgumentException("Invalid free: No allocated block at address " + address);
     }
 
+    /**
+     * Writes a byte value to the specified address in the simulated heap.
+     * 
+     * @param address The index in the heap array where the value should be written.
+     * @param value The byte value to write to the heap.
+     * @throws IllegalArgumentException if the address is out of bounds of the heap array.
+     */
+    public void write(int address, byte value) {
+        if (address < 0 || address >= heap.length) {
+            throw new IllegalArgumentException("Invalid write address: " + address);
+        }
+        heap[address] = value;
+    }
 
 
 
