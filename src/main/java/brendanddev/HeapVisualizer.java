@@ -67,7 +67,7 @@ public class HeapVisualizer {
         
         for (int i = 0; i < blocks.size(); i++) {
             MemoryBlock block = blocks.get(i);
-            String status = block.free ? "🟢 FREE" : "🔴 ALLOCATED";
+            String status = block.free ? "[F] FREE" : "[A] ALLOCATED";
             int endAddr = block.start + block.size - 1;
             
             System.out.printf("%-6d %-8d %-8d %-10s %-10d%n", 

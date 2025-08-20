@@ -1,7 +1,9 @@
 package brendanddev;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Simulates a Heap in Java using a byte array.
@@ -12,6 +14,7 @@ public class SimulatedHeap {
     private final HeapVisualizer visualizer = new HeapVisualizer(this);
     private final byte[] heap;
     private final List<MemoryBlock> blocks;
+    private final Map<Integer, MemoryBlock> allocations = new HashMap<>();
 
     /**
      * Constructs a new SimulatedHeap with the specified size.
@@ -71,6 +74,9 @@ public class SimulatedHeap {
                 // Mark the block as allocated so it wont be used again until freed
                 block.free = false;
 
+                // Track blocks that have been allocated in map
+                allocations.put(block.start, block);
+
                 // Return the starting index as the 'pointer' to the allocated block
                 return block.start;
             }
@@ -86,36 +92,28 @@ public class SimulatedHeap {
      * @throws IllegalArgumentException if the address is invalid or the block is already free.
      */
     public void free(int address) {
-        for (int i = 0; i < blocks.size(); i++) {
-
-            MemoryBlock block = blocks.get(i);
-
-            // Find the block that starts at the given address and is currently allocated
-            if (block.start == address && !block.free) {
-                // Mark block as free
-                block.free = true;
-
-                // Merge (coalesce) with adjacent block if its free
-                if (i + 1 < blocks.size() && blocks.get(i + 1).free) {
-                    // Grow current block by adding the size of the next block
-                    block.size += blocks.get(i + 1).size;
-                    // Remove adjacent block since its merged
-                    blocks.remove(i + 1);
-                }
-
-                // Merge (coalesce) with previous block if its free
-                if (i > 0 && blocks.get(i - 1).free) {
-                    // Grow previous block to absorb current block
-                    blocks.get(i - 1).size += block.size;
-                    // Remove the current block since it's now merged into the previous one
-                    blocks.remove(i);
-                }
-                // Finished freeing
-                return;
-            }
+        // Get the block from the allocations map
+        MemoryBlock block = allocations.get(address);
+        if (block == null || block.free) {
+            throw new IllegalArgumentException("Invalid free: No allocated block at address " + address);
         }
-        // If no block was found at the given address, this is an invalid free
-        throw new IllegalArgumentException("Invalid free: No allocated block at address " + address);
+
+        // Mark block as free and remove from map
+        block.free = true;
+        allocations.remove(address);
+
+        // Merge with next block if free
+        int index = blocks.indexOf(block);
+        if (index + 1 < blocks.size() && blocks.get(index + 1).free) {
+            block.size += blocks.get(index + 1).size;
+            blocks.remove(index + 1);
+        }
+
+        // Merge with previous block if free
+        if (index > 0 && blocks.get(index - 1).free) {
+            blocks.get(index - 1).size += block.size;
+            blocks.remove(index);
+        }
     }
 
     /**
