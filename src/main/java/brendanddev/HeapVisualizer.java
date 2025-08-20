@@ -11,6 +11,31 @@ public class HeapVisualizer {
         this.heap = heap;
     }
 
+
+    /**
+     * Prints detailed information about each memory block
+     */
+    public void printHeapDetailed() {
+
+        // Access blocks through the heap
+        List<MemoryBlock> blocks = heap.getBlocks();
+
+        System.out.println("\nDETAILED BLOCK INFORMATION");
+        System.out.println("═".repeat(60));
+        System.out.printf("%-6s %-8s %-8s %-10s %-10s%n", "Block#", "Start", "Size", "Status", "End");
+        System.out.println("─".repeat(60));
+        
+        for (int i = 0; i < blocks.size(); i++) {
+            MemoryBlock block = blocks.get(i);
+            String status = block.free ? "🟢 FREE" : "🔴 ALLOCATED";
+            int endAddr = block.start + block.size - 1;
+            
+            System.out.printf("%-6d %-8d %-8d %-10s %-10d%n", 
+                            i, block.start, block.size, status, endAddr);
+        }
+        printMemoryStats();
+    }
+
     /**
      * Prints memory usage statistics
      */
@@ -83,7 +108,6 @@ public class HeapVisualizer {
         }
         System.out.println("═".repeat(60));
     }
-
 
     
 }
