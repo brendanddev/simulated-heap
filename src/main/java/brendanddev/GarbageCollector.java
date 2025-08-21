@@ -1,5 +1,8 @@
 package brendanddev;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * A simulated GarbageCollector that manages memory in a simulated heap.
  */
@@ -18,5 +21,16 @@ public class GarbageCollector {
         this.heap = heap;
         this.rootSet = rootSet;
     }
+
+    // Collect garbage
+    public void collect() {
+        Set<Integer> reachableAddresses = new HashSet<>();
+    }
+
+    // Mark memoiry blocks as reachable
+    public void mark(int address, Set<Integer> reachableAddresses) {
+    }
+
+
     
 }
