@@ -58,6 +58,13 @@ public class SimulatedHeap {
         return allocations;
     }
 
+    /** 
+     * Returns the root set of memory blocks.
+     */
+    public RootSet getRootSet() {
+        return rootSet;
+    }
+
     /**
      * Finds a memory block by its exact starting address.
      * 
