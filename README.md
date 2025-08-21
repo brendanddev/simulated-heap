@@ -14,8 +14,27 @@ Instead of letting the JVM handle allocation and garbage collection automaticall
 - **Simulated Pointers**: Each `MemoryBlock` can reference other blocks.
 - **Root Set Management**: `RootSet` tracks reachable memory blocks to prevent collection.
 - **Heap Visualization**: `printHeap()` shows the current state of the heap for debugging.  
-- **Garbage Collection**:
+- **Garbage Collection**: Implements a mark-and-sweep GC that frees unreachable memory while preserving reachable blocks.
 - **Demo Program**: `Main.java` runs a sequence of allocations/frees to show heap changes in action.  
+
+---
+
+## Installation
+1. Clone the repository:
+   ```bash
+   git clone 
+   cd simulated-heap
+   ```
+
+2. Build the project using Maven:
+   ```bash
+   mvn clean compile
+   ```
+
+3. Run the demo program:
+   ```bash
+    mvn exec:java -Dexec.mainClass="brendanddev.Main"
+    ```
 
 ---
 
@@ -37,4 +56,11 @@ heap.printHeap();
 heap.free(b);             // free the second block
 heap.free(c);             // free the 4-byte block
 heap.printHeap();         // entire heap is free again
+
+// Demonstrate Garbage Collection
+RootSet rootSet = heap.getRootSet();
+rootSet.add(b);            // mark block 'b' as reachable
+GarbageCollector gc = new GarbageCollector(heap, rootSet);
+gc.collect();
+heap.printHeap();          // only reachable blocks remain allocated
 ```
