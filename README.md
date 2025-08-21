@@ -38,6 +38,24 @@ Instead of letting the JVM handle allocation and garbage collection automaticall
 
 ---
 
+## Project Structure
+
+simulated-heap/
+│
+├─ src/main/java/brendanddev/
+│   ├─ SimulatedHeap.java
+│   ├─ MemoryBlock.java
+│   ├─ RootSet.java
+│   ├─ GarbageCollector.java
+│   ├─ HeapVisualizer.java
+│   ├─ AllocationStrategy.java
+│   └─ Main.java
+│
+├─ pom.xml
+└─ README.md
+
+---
+
 ## Example Usage  
 
 ```java
