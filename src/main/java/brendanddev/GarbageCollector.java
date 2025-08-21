@@ -49,6 +49,27 @@ public class GarbageCollector {
         }
     }
 
+    /**
+     * Performs the sweep phase of the mark and sweep garbage collector.
+     * 
+     * This method iterates through all memory blocks in the heap and frees any allocated blocks
+     * that were not marked as reachable (garbage) and resets the mark flag on all other blocks
+     * for the next collection cycle.
+     */
+    private void sweep() {
+        for (MemoryBlock block : heap.getBlocks()) {
+            // Check if the block is allocated but not marked as reachable
+            if (!block.isFree() && !block.isMarked()) {
+                // Free unmarked allocated blocks in the heap
+                heap.free(block.getStart());
+            } else {
+                // The block is either free or still reachable
+                // Reset the mark flag for future garbage collection cycles
+                block.unmark();
+            }
+        }
+    }
+
 
     
 }
