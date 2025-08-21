@@ -1,5 +1,7 @@
 package brendanddev;
 
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simulated GarbageCollector that manages memory in a simulated heap.
@@ -64,19 +66,27 @@ public class GarbageCollector {
      * for the next collection cycle.
      */
     private void sweep() {
+
+        List<Integer> blocksToFree = new ArrayList<>();
+
+        // First pass: identify garbage blocks
         for (MemoryBlock block : heap.getBlocks()) {
             // Check if the block is allocated but not marked as reachable
             if (!block.isFree() && !block.isMarked()) {
-                // Free unmarked allocated blocks in the heap
-                heap.free(block.getStart());
+                blocksToFree.add(block.getStart());
             } else {
                 // The block is either free or still reachable
                 // Reset the mark flag for future garbage collection cycles
                 block.unmark();
             }
         }
+
+        // Second pass: free the identified garbage blocks safely
+        for (int address : blocksToFree) {
+            // Free the block by removing it from allocations and marking it as free
+            heap.free(address);
+        }
     }
-
-
-    
 }
+
+
