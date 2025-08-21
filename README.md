@@ -40,6 +40,7 @@ Instead of letting the JVM handle allocation and garbage collection automaticall
 
 ## Project Structure
 
+```
 simulated-heap/
 │
 ├─ src/main/java/brendanddev/
@@ -53,6 +54,7 @@ simulated-heap/
 │
 ├─ pom.xml
 └─ README.md
+```
 
 ---
 
