@@ -8,50 +8,33 @@ public class Main {
 
     public static void main(String[] args) {
 
-        // Created a SimulatedHeap with 32 bytes of memory
+        // Create a SimulatedHeap with 32 bytes
         SimulatedHeap heap = new SimulatedHeap(32);
 
-        // Set allocation strategy to BEST_FIT
-        heap.setAllocationStrategy(AllocationStrategy.BEST_FIT);
+        // Set allocation strategy
+        heap.setAllocationStrategy(AllocationStrategy.FIRST_FIT);
 
-        // Create the garbage collector
-        GarbageCollector gc = new GarbageCollector(heap, heap.getRootSet());
-
-        // Allocate memory into first and second blocks
-        int a = heap.malloc(8); 
+        // Allocate three blocks
+        int a = heap.malloc(8);
         int b = heap.malloc(8);
+        int c = heap.malloc(8);
 
-        // Add only the first block to the root set
+        // Set up references: A -> B
+        heap.findBlock(a).addReference(b);
+        // C will remain unreferenced -> unreachable
+
+        // Add only A to the root set
         heap.getRootSet().add(a);
+
+        System.out.println("Before GC:");
         heap.printHeap();
 
-        // Allocate another 4 bytes of memory and free the second block
-        int c = heap.malloc(4);
-        heap.free(b);
-
-        // At this point 'b' and 'c' are not in the root set, so they are garbage
-        // Run gc to clean them up
+        // Create GC and run collection
+        GarbageCollector gc = new GarbageCollector(heap, heap.getRootSet());
         gc.collect();
 
-        // Print the heap after garbage collection
+        System.out.println("\nAfter GC:");
         heap.printHeap();
-
-        // Remove the first block 'a' from the root set
-        heap.getRootSet().remove(a);
-
-        // Run gc again
-        gc.collect();
-
-        heap.printHeap();
-
-
-
-
-
-
-
-
-
 
 
 
