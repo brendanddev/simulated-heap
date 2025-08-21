@@ -51,7 +51,7 @@ public class HeapVisualizer {
         for (int addr = 0; addr < Math.min(heap.getHeapSize(), 50); addr++) {
             boolean isAllocated = false;
             for (MemoryBlock block : blocks) {
-                if (addr >= block.start && addr < block.start + block.size && !block.free) {
+                if (addr >= block.getStart() && addr < block.getStart() + block.getSize() && !block.isFree()) {
                     isAllocated = true;
                     break;
                 }
@@ -82,11 +82,11 @@ public class HeapVisualizer {
         
         for (int i = 0; i < blocks.size(); i++) {
             MemoryBlock block = blocks.get(i);
-            String status = block.free ? "[F] FREE" : "[A] ALLOCATED";
-            int endAddr = block.start + block.size - 1;
+            String status = block.isFree() ? "[F] FREE" : "[A] ALLOCATED";
+            int endAddr = block.getStart() + block.getSize() - 1;
             
             System.out.printf("%-6d %-8d %-8d %-10s %-10d%n", 
-                            i, block.start, block.size, status, endAddr);
+                            i, block.getStart(), block.getSize(), status, endAddr);
         }
         printMemoryStats();
     }
@@ -105,11 +105,11 @@ public class HeapVisualizer {
         int allocatedBlocks = 0;
         
         for (MemoryBlock block : blocks) {
-            if (block.free) {
-                totalFree += block.size;
+            if (block.isFree()) {
+                totalFree += block.getSize();
                 freeBlocks++;
             } else {
-                totalAllocated += block.size;
+                totalAllocated += block.getSize();
                 allocatedBlocks++;
             }
         }
@@ -151,15 +151,15 @@ public class HeapVisualizer {
         System.out.println("═".repeat(60));
         
         for (MemoryBlock block : blocks) {
-            String status = block.free ? "FREE" : "USED";
-            String symbol = block.free ? "░" : "█";
+            String status = block.isFree() ? "FREE" : "USED";
+            String symbol = block.isFree() ? "░" : "█";
             
             // Create a visual bar proportional to block size
-            int barLength = Math.max(1, block.size / Math.max(1, heap.getHeapSize() / 40));
+            int barLength = Math.max(1, block.getSize() / Math.max(1, heap.getHeapSize() / 40));
             String bar = symbol.repeat(barLength);
             
             System.out.printf("0x%04X |%s| %s (%d bytes)%n", 
-                            block.start, bar, status, block.size);
+                            block.getStart(), bar, status, block.getSize());
         }
         System.out.println("═".repeat(60));
     }

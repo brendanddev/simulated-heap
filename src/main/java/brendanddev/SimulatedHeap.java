@@ -92,27 +92,27 @@ public class SimulatedHeap {
         // Loop through all blocks to find a free block big enough
         for (MemoryBlock block : blocks) {
             // Check if the block is free and has enough size
-            if (block.free && block.size >= size) {
+            if (block.isFree() && block.getSize() >= size) {
                 // If block is larger than requested size, split it
                 // Prevents wasting extra memory in a large block
-                if (block.size > size) {
+                if (block.getSize() > size) {
                     // Create new block for leftover memory
                     // Its start is right after the allocated portion
-                    MemoryBlock newBlock = new MemoryBlock(block.start + size, block.size - size);
+                    MemoryBlock newBlock = new MemoryBlock(block.getStart() + size, block.getSize() - size);
                     
                     // Insert new block into list, right after the current block
                     blocks.add(blocks.indexOf(block) + 1, newBlock);
                     // Reduce the size of the original block to match the requested size
-                    block.size = size;
+                    block.setSize(size);
                 }
                 // Mark the block as allocated so it wont be used again until freed
-                block.free = false;
+                block.setFree(false);
 
                 // Track blocks that have been allocated in map
-                allocations.put(block.start, block);
+                allocations.put(block.getStart(), block);
 
                 // Return the starting index as the 'pointer' to the allocated block
-                return block.start;
+                return block.getStart();
             }
         }
         // No suitable block found
@@ -133,9 +133,9 @@ public class SimulatedHeap {
         // Loop through all blocks to find the smallest free block that fits the requested size
         for (MemoryBlock block : blocks) {
             // Check if the block is free and has enough size
-            if (block.free && block.size >= size) {
+            if (block.isFree() && block.getSize() >= size) {
                 // If this is the first block or smaller than the current best, update bestBlock
-                if (bestBlock == null || block.size < bestBlock.size) {
+                if (bestBlock == null || block.getSize() < bestBlock.getSize()) {
                     bestBlock = block;
                 }
             }
@@ -147,22 +147,22 @@ public class SimulatedHeap {
         }
 
         // If the best block is larger than requested size, split it
-        if (bestBlock.size > size) {
+        if (bestBlock.getSize() > size) {
             // Create new block for leftover memory
-            MemoryBlock newBlock = new MemoryBlock(bestBlock.start + size, bestBlock.size - size);
+            MemoryBlock newBlock = new MemoryBlock(bestBlock.getStart() + size, bestBlock.getSize() - size);
             
             // Insert new block into list, right after the best block
             blocks.add(blocks.indexOf(bestBlock) + 1, newBlock);
             // Reduce the size of the best block to match the requested size
-            bestBlock.size = size;
+            bestBlock.setSize(size);
         }
 
         // Mark block as allocated
-        bestBlock.free = false;
-        allocations.put(bestBlock.start, bestBlock);
+        bestBlock.setFree(false);
+        allocations.put(bestBlock.getStart(), bestBlock);
 
         // Return the starting index as the 'pointer' to the allocated block
-        return bestBlock.start;
+        return bestBlock.getStart();
     }
 
     /**
@@ -174,24 +174,24 @@ public class SimulatedHeap {
     public void free(int address) {
         // Get the block from the allocations map
         MemoryBlock block = allocations.get(address);
-        if (block == null || block.free) {
+        if (block == null || block.isFree()) {
             throw new IllegalArgumentException("Invalid free: No allocated block at address " + address);
         }
 
         // Mark block as free and remove from map
-        block.free = true;
+        block.setFree(true);
         allocations.remove(address);
 
         // Merge with next block if free
         int index = blocks.indexOf(block);
-        if (index + 1 < blocks.size() && blocks.get(index + 1).free) {
-            block.size += blocks.get(index + 1).size;
+        if (index + 1 < blocks.size() && blocks.get(index + 1).isFree()) {
+            block.setSize(block.getSize() + blocks.get(index + 1).getSize());
             blocks.remove(index + 1);
         }
 
         // Merge with previous block if free
-        if (index > 0 && blocks.get(index - 1).free) {
-            blocks.get(index - 1).size += block.size;
+        if (index > 0 && blocks.get(index - 1).isFree()) {
+            blocks.get(index - 1).setSize(blocks.get(index - 1).getSize() + block.getSize());
             blocks.remove(index);
         }
     }
@@ -205,7 +205,7 @@ public class SimulatedHeap {
      */
     public void write(int address, byte value) {
         MemoryBlock block = findBlockContaining(address);
-        if (block == null || block.free) {
+        if (block == null || block.isFree()) {
             throw new IllegalArgumentException("Cannot write to free or invalid address: " + address);
         }
         heap[address] = value;
@@ -220,7 +220,7 @@ public class SimulatedHeap {
      */
     public byte read(int address) {
         MemoryBlock block = findBlockContaining(address);
-        if (block == null || block.free) {
+        if (block == null || block.isFree()) {
             throw new IllegalArgumentException("Cannot read from free or invalid address: " + address);
         }
         return heap[address];
@@ -234,7 +234,7 @@ public class SimulatedHeap {
      */
     private MemoryBlock findBlockContaining(int address) {
         for (MemoryBlock block : blocks) {
-            if (!block.free && address >= block.start && address < block.start + block.size) {
+            if (!block.isFree() && address >= block.getStart() && address < block.getStart() + block.getSize()) {
                 return block;
             }
         }

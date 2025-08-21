@@ -32,26 +32,22 @@ public class MemoryBlock {
         this.marked = false;
     }
 
-    // Accessors 
-
+    // Getters and setters
     public int getStart() { return start; }
     public int getSize() { return size; }
+    public void setSize(int size) { this.size = size; }
     public boolean isFree() { return free; }
     public void setFree(boolean free) { this.free = free; }    
 
-    // Mark flag
-    
+    // Flag bit as marked or unmarked for garbage collection
     public void mark() { this.marked = true; }
     public void unmark() { this.marked = false; }
     public boolean isMarked() { return marked; }
 
     // References
-
     public List<Integer> getReferences() { return references; }
     public void addReference(int address) { references.add(address); }
     public void removeReference(int address) { references.remove(Integer.valueOf(address)); }
-
-
 
 
     /**
