@@ -39,6 +39,14 @@ public class MemoryBlock {
     public boolean isFree() { return free; }
     public void setFree(boolean free) { this.free = free; }    
 
+    // Mark flag
+    public void mark() { this.marked = true; }
+    public void unmark() { this.marked = false; }
+    public boolean isMarked() { return marked; }
+
+
+    
+
     /**
      * Returns a string representation of the MemoryBlock.
      */
