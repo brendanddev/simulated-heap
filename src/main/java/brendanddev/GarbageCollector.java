@@ -22,6 +22,13 @@ public class GarbageCollector {
 
     // Collect garbage
     public void collect() {
+        // Mark phase
+        for (int rootAddr : rootSet.getRoots()) {
+            mark(rootAddr);
+        }
+
+        // Sweep phase
+        sweep();
     }
 
     /**
