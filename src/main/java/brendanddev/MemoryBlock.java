@@ -11,11 +11,12 @@ import java.util.List;
  */
 public class MemoryBlock {
 
-    int start;
-    int size;
-    boolean free;
+    private int start;
+    private int size;
+    private boolean free;
+    private boolean marked;
     // List of integer references to simulate pointers
-    public List<Integer> references = new ArrayList<>();
+    private final List<Integer> references = new ArrayList<>();
 
     /**
      * Constructs a new MemoryBlock.
@@ -28,7 +29,9 @@ public class MemoryBlock {
         this.start = start;
         this.size = size;
         this.free = true;
+        this.marked = false;
     }
+
 
     /**
      * Returns a string representation of the MemoryBlock.
