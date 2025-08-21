@@ -1,7 +1,5 @@
 package brendanddev;
 
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * A simulated GarbageCollector that manages memory in a simulated heap.
@@ -24,11 +22,31 @@ public class GarbageCollector {
 
     // Collect garbage
     public void collect() {
-        Set<Integer> reachableAddresses = new HashSet<>();
     }
 
-    // Mark memoiry blocks as reachable
-    public void mark(int address, Set<Integer> reachableAddresses) {
+    /**
+     * Recursively marks a memory block and all blocks reachable from it.
+     * 
+     * This is the mark phase of a mark and sweep garbage collector.
+     * If the block is null, already marked, or free, it returns immediately.
+     * 
+     * @param address The starting address of the memory block to mark as reachable.
+     */
+    public void mark(int address) {
+
+        MemoryBlock block = heap.findBlock(address);
+        // Base cases
+        if (block == null || block.isMarked() || block.isFree()) {
+            return;
+        }
+
+        // Mark current block as reachable
+        block.mark();
+
+        // Recursively mark all referenced blocks by recursing on their linked addresses
+        for (int refAddr : block.getReferences()) {
+            mark(refAddr);
+        }
     }
 
 
