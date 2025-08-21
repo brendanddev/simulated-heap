@@ -40,12 +40,19 @@ public class MemoryBlock {
     public void setFree(boolean free) { this.free = free; }    
 
     // Mark flag
+    
     public void mark() { this.marked = true; }
     public void unmark() { this.marked = false; }
     public boolean isMarked() { return marked; }
 
+    // References
 
-    
+    public List<Integer> getReferences() { return references; }
+    public void addReference(int address) { references.add(address); }
+    public void removeReference(int address) { references.remove(Integer.valueOf(address)); }
+
+
+
 
     /**
      * Returns a string representation of the MemoryBlock.
