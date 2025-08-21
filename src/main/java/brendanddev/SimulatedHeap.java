@@ -51,6 +51,23 @@ public class SimulatedHeap {
         return heap.length;
     }
 
+    /** 
+     * Returns the map of all allocated memory blocks in the heap.
+     */
+    public Map<Integer, MemoryBlock> getAllocations() {
+        return allocations;
+    }
+
+    /**
+     * Finds a memory block by its exact starting address.
+     * 
+     * @param startAddress The starting address of the memory block to find.
+     * @return The MemoryBlock if found, or null if no block exists at that address.
+     */
+    public MemoryBlock findBlock(int startAddress) {
+        return allocations.get(startAddress);
+    }
+
     /**
      * Determines the allocation strategy to use for memory allocation.
      */
