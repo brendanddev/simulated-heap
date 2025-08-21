@@ -17,6 +17,7 @@ public class SimulatedHeap {
     private final byte[] heap;
     private final List<MemoryBlock> blocks;
     private final Map<Integer, MemoryBlock> allocations = new HashMap<>();
+    private final RootSet rootSet = new RootSet();
 
     /**
      * Constructs a new SimulatedHeap with the specified size.
