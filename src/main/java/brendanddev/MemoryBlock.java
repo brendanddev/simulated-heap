@@ -32,6 +32,12 @@ public class MemoryBlock {
         this.marked = false;
     }
 
+    // Accessors 
+
+    public int getStart() { return start; }
+    public int getSize() { return size; }
+    public boolean isFree() { return free; }
+    public void setFree(boolean free) { this.free = free; }    
 
     /**
      * Returns a string representation of the MemoryBlock.
