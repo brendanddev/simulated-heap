@@ -3,6 +3,7 @@ package brendanddev;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -32,6 +33,30 @@ public class SimulatedHeapTest {
         // Free the allocated block
         heap.free(ptr);
         assertThrows(IllegalArgumentException.class, () -> heap.read(ptr), "Reading freed memory should fail");
+    }
+
+    /**
+     * Tests that multiple allocations work as expected, are distinct, and do not overlap.
+     */
+    @Test
+    public void testMultipleAllocations() {
+        SimulatedHeap heap = new SimulatedHeap(64);
+        Integer ptr1 = heap.malloc(16);
+        Integer ptr2 = heap.malloc(16);
+
+        assertNotNull(ptr1, "First allocation should succeed");
+        assertNotNull(ptr2, "Second allocation should succeed");
+        assertNotEquals(ptr1, ptr2, "Allocations should return different pointers");
+    }
+
+    /**
+     * Tests that allocations are aligned to 8-byte boundaries.
+     */
+    @Test
+    public void testMemoryAlignment() {
+        SimulatedHeap heap = new SimulatedHeap(64);
+        Integer ptr = heap.malloc(10);
+        assertEquals(0, ptr % 8, "Allocation should be aligned to 8 bytes");
     }
 
     
