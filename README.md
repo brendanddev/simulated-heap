@@ -62,6 +62,10 @@ simulated-heap/
 │   │
 │   └─ Main.java             # Demo entry point
 │
+├─ src/test/java/brendanddev/
+│   ├─ SimulatedHeapTest.java  # Unit tests for SimulatedHeap
+│   └─ GarbageCollectorTest.java # Unit tests for GarbageCollector
+│
 ├─ pom.xml
 └─ README.md
 ```
