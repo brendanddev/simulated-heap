@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -76,6 +77,50 @@ public class GarbageCollectorTest {
         int blocksAfterGC = heap.getAllocations().size();
         
         assertEquals(blocksBeforeGC, blocksAfterGC, "No blocks should be collected when all are reachable");
+    }
+
+    /**
+     * Tests that all blocks are collected when none are reachable.
+     */
+    @Test
+    public void testCollectAllGarbage() {
+        // Allocate blocks but don't add any to root set
+        heap.malloc(16);
+        heap.malloc(32);
+        heap.malloc(8);
+        
+        int allocatedBefore = heap.getAllocations().size();
+        assertTrue(allocatedBefore > 0, "Should have allocated blocks");
+        
+        gc.collect();
+        
+        int allocatedAfter = heap.getAllocations().size();
+        assertEquals(0, allocatedAfter, "All unreachable blocks should be collected");
+    }
+
+    /**
+     * Tests that blocks with reference chains are correctly marked and not collected.
+     */
+    @Test
+    public void testSimpleReferenceChain() {
+        // Create chain: A -> B -> C
+        Integer ptrA = heap.malloc(16);
+        Integer ptrB = heap.malloc(16);
+        Integer ptrC = heap.malloc(16);
+        
+        // Set up reference chain
+        heap.findBlock(ptrA).addReference(ptrB);
+        heap.findBlock(ptrB).addReference(ptrC);
+        
+        // Only add A to root set
+        rootSet.add(ptrA);
+        
+        gc.collect();
+        
+        // All blocks should be reachable through the chain
+        assertNotNull(heap.findBlock(ptrA), "Block A should be reachable");
+        assertNotNull(heap.findBlock(ptrB), "Block B should be reachable through A");
+        assertNotNull(heap.findBlock(ptrC), "Block C should be reachable through B");
     }
     
 }
