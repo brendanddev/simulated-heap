@@ -125,6 +125,7 @@ public class SimulatedHeap {
         // Track best fitting block
         MemoryBlock bestBlock = null;
 
+        // Search all blocks for the smallest free block that fits the request
         for (MemoryBlock block : blocks) {
             if (block.isFree() && block.getSize() >= size) {
                 if (bestBlock == null || block.getSize() < bestBlock.getSize()) {
@@ -132,7 +133,10 @@ public class SimulatedHeap {
                 }
             }
         }
+        // If no suitable block found
         if (bestBlock == null) return null;
+
+        // Otherwise allocate from the best fitting block found
         return allocateFromBlock(bestBlock, size);
     }
 
@@ -158,18 +162,9 @@ public class SimulatedHeap {
 
         // If no free block found that fits, allocation fails
         if (worstBlock == null) return null;
-
-        // If chosen block is larger than needed, split it
-        if (worstBlock.getSize() > size) {
-            MemoryBlock newBlock = new MemoryBlock(worstBlock.getStart() + size, worstBlock.getSize() - size);
-            blocks.add(blocks.indexOf(worstBlock) + 1, newBlock);
-            worstBlock.setSize(size);
-        }
-
-        // Mark the block as allocated
-        worstBlock.setFree(false);
-        allocations.put(worstBlock.getStart(), worstBlock);
-        return worstBlock.getStart();
+        
+        // Otherwise allocate from the worst fitting block found
+        return allocateFromBlock(worstBlock, size);
     }
 
     /**
@@ -190,26 +185,15 @@ public class SimulatedHeap {
             int index = (startIndex + i) % n;
             MemoryBlock block = blocks.get(index);
 
-            // Check if the block is free and has enough size
-            if (block.isFree() && block.getSize() >= size) {
-                // If block is larger than needed, split it
-                if (block.getSize() > size) {
-                    MemoryBlock newBlock = new MemoryBlock(block.getStart() + size, block.getSize() - size);
-                    blocks.add(index + 1, newBlock);
-                    block.setSize(size);
+            if (block.isFree()) {
+                Integer address = allocateFromBlock(block, size);
+                if (address != null) {
+                    // Update last allocation index
+                    lastAllocationIndex = index;
+                    return address;
                 }
-
-                // Mark the block as allocated
-                block.setFree(false);
-                allocations.put(block.getStart(), block);
-
-                // Update the last allocation index
-                lastAllocationIndex = index;
-
-                return block.getStart();
             }
-        }
-        // No suitable block found
+        } 
         return null;
     }
 
