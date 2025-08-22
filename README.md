@@ -16,7 +16,7 @@ Instead of letting the JVM handle allocation and garbage collection automaticall
 - **Garbage Collection**: Implements a mark-and-sweep GC that frees unreachable memory while preserving reachable blocks.
 - **Heap Visualization**: `printHeap()` shows the current state of the heap for debugging.
 - **Garbage Collection Visualization**: `GCVisualizer` provides a graphical view of heap changes during GC cycles.
-- **Memory Alignment**:
+- **Memory Alignment**: All allocations are aligned to 8-byte boundaries (configurable via `ALIGNMENT_SIZE`), ensuring proper memory layout.
 - **Demo Program**: `Main.java` runs a sequence of allocations/frees to show heap changes in action.  
 
 ---
