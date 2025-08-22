@@ -21,6 +21,7 @@ public class SimulatedHeap {
     private final List<MemoryBlock> blocks;
     private final Map<Integer, MemoryBlock> allocations = new HashMap<>();
     private final RootSet rootSet = new RootSet();
+    private static final int ALIGNMENT_SIZE = 8;
     private int lastAllocationIndex = 0;
 
     /**
@@ -98,36 +99,59 @@ public class SimulatedHeap {
     }
 
     /**
-     * Allocates a block of memory of the given size using the first-fit strategy.
+     * Allocates a block of memory of the given size using the first-fit strategy,
+     * ensuring that the starting address is aligned to ALIGNMENT_SIZE.
      * 
      * @param size The number of bytes to allocate.
      * @return The starting index of the allocated memory block, or null if allocation fails.
      */
     public Integer mallocFirstFit(int size) {
+        
         // Loop through all blocks to find a free block big enough
         for (MemoryBlock block : blocks) {
-            // Check if the block is free and has enough size
-            if (block.isFree() && block.getSize() >= size) {
-                // If block is larger than requested size, split it
-                // Prevents wasting extra memory in a large block
-                if (block.getSize() > size) {
-                    // Create new block for leftover memory
-                    // Its start is right after the allocated portion
-                    MemoryBlock newBlock = new MemoryBlock(block.getStart() + size, block.getSize() - size);
-                    
-                    // Insert new block into list, right after the current block
-                    blocks.add(blocks.indexOf(block) + 1, newBlock);
-                    // Reduce the size of the original block to match the requested size
-                    block.setSize(size);
+            
+            // Check if block is free
+            if (block.isFree()) {
+
+                // Align the start of this free block and calculate padding
+                int alignedStart = alignAddress(block.getStart());
+                int padding = alignedStart - block.getStart();
+                int totalRequiredSize = size + padding;
+
+                // Check if the free block is big enough after alignment
+                if (block.getSize() >= totalRequiredSize) {
+
+                    // Check if padding is needed, if it is, create a padding block to split off the padding
+                    if (padding > 0) {
+                        // Create a padding block to fill the gap and keep alignment
+                        MemoryBlock paddingBlock = new MemoryBlock(block.getStart(), padding);
+                        paddingBlock.setFree(true);
+
+                        // Insert the padding block before current block
+                        int idx = blocks.indexOf(block);
+                        blocks.add(idx, paddingBlock);
+
+                        // Adjust original block's start and size
+                        block.setStart(alignedStart);
+                        block.setSize(block.getSize() - padding);
+                    }
+
+                    // If the block is larger than requested size, split it
+                    if (block.getSize() > size) {
+                        // Create a new block for the leftover memory
+                        MemoryBlock newBlock = new MemoryBlock(block.getStart() + size, block.getSize() - size);
+                        
+                        // Insert the new block into the list right after the current block
+                        blocks.add(blocks.indexOf(block) + 1, newBlock);
+                        // Reduce the size of the original block to match the requested size
+                        block.setSize(size);
+
+                    }
+                    // Mark the block as allocated
+                    block.setFree(false);
+                    allocations.put(block.getStart(), block);
+                    return block.getStart();
                 }
-                // Mark the block as allocated so it wont be used again until freed
-                block.setFree(false);
-
-                // Track blocks that have been allocated in map
-                allocations.put(block.getStart(), block);
-
-                // Return the starting index as the 'pointer' to the allocated block
-                return block.getStart();
             }
         }
         // No suitable block found
@@ -331,6 +355,18 @@ public class SimulatedHeap {
             }
         }
         return null;
+    }
+
+    /**
+     * Helper to align an address to the nearest multiple of ALIGNMENT_SIZE.
+     * 
+     * @param address The address to align.
+     * @return The aligned address, or the same address if already aligned.
+     */
+    private int alignAddress(int address) {
+        int remainder = address % ALIGNMENT_SIZE;
+        if (remainder == 0) return address;
+        return address + (ALIGNMENT_SIZE - remainder);
     }
 
     /**
