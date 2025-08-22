@@ -94,6 +94,7 @@ public class SimulatedHeapTest {
      * freeing some to create holes, and verifying that the allocator reuses the 
      * first available block rather than later ones.
      */
+    @SuppressWarnings("unused")
     @Test
     public void testFirstFitStrategy() {
         heap.setAllocationStrategy(AllocationStrategy.FIRST_FIT);
@@ -116,6 +117,7 @@ public class SimulatedHeapTest {
      * Tests the Best-fit allocation strategy by ensuring that the allocator
      * chooses the smallest suitable free block for a new allocation request.
      */
+    @SuppressWarnings("unused")
     @Test
     public void testBestFitStrategy() {
         heap.setAllocationStrategy(AllocationStrategy.BEST_FIT);
@@ -138,6 +140,7 @@ public class SimulatedHeapTest {
      * Tests the Worst-fit allocation strategy by ensuring that the allocator
      * chooses the largest suitable free block for a new allocation request.
      */
+    @SuppressWarnings("unused")
     @Test
     public void testWorstFitStrategy() {
         heap.setAllocationStrategy(AllocationStrategy.WORST_FIT);
@@ -163,6 +166,7 @@ public class SimulatedHeapTest {
      * Tests the Next-fit allocation strategy by ensuring that the allocator
      * continues searching from the last allocated block for the next allocation request.
      */
+    @SuppressWarnings("unused")
     @Test
     public void testNextFitStrategy() {
         heap.setAllocationStrategy(AllocationStrategy.NEXT_FIT);
