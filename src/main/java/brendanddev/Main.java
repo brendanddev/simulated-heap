@@ -87,8 +87,12 @@ public class Main {
         // Add only A to the root set
         heap.getRootSet().add(a);
 
+        // Create GarbageCollectorVisualizer to visualize garbage collection
+        GCVisualizer gcVisualizer = new GCVisualizer(heap);        
+
         System.out.println("Before GC:");
         heap.printHeap();
+        gcVisualizer.printHeapStats();
 
         // Create GC and run collection
         GarbageCollector gc = new GarbageCollector(heap, heap.getRootSet());
@@ -96,6 +100,7 @@ public class Main {
 
         System.out.println("\nAfter GC:");
         heap.printHeap();
+        gcVisualizer.printHeapStats();
     }
 
 
