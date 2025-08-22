@@ -259,5 +259,41 @@ public class SimulatedHeapTest {
             assertTrue(freeBlocks > 2, "Heap should show signs of fragmentation");
         }
     }
+
+
+    /**
+     * Tests the behavior of the heap when attempting allocations larger than available memory.
+     */
+    @Test
+    public void testOutOfMemory() {
+        // Try to allocate more than available
+        Integer ptr = heap.malloc(heap.getHeapSize() + 1);
+        assertNull(ptr, "Allocation larger than heap should fail");
+        
+        // Allocate entire heap
+        Integer fullPtr = heap.malloc(heap.getHeapSize());
+        assertNotNull(fullPtr, "Allocation of entire heap should succeed");
+        
+        // Try to allocate more
+        Integer failPtr = heap.malloc(1);
+        assertNull(failPtr, "Allocation when heap is full should fail");
+    }
+
+    /**
+     * Tests invalid freeing non allocated addresses and double frees.
+     */
+    @Test
+    public void testInvalidFree() {
+        // Try to free invalid address
+        assertThrows(IllegalArgumentException.class, () -> heap.free(999), 
+                    "Freeing invalid address should throw exception");
+        
+        // Try to free same address twice
+        Integer ptr = heap.malloc(16);
+        heap.free(ptr);
+        assertThrows(IllegalArgumentException.class, () -> heap.free(ptr), 
+                    "Double free should throw exception");
+    }
+
     
 }
