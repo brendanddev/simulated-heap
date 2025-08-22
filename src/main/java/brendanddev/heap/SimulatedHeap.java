@@ -293,9 +293,15 @@ public class SimulatedHeap {
      * @return
      */
     private Integer allocateFromBlock(MemoryBlock block, int size) {
-
         int alignedStart = alignAddress(block.getStart());
         int padding = alignedStart - block.getStart();
+
+        // If the padding itself is the whole block, just allocate the block entirely
+        if (padding >= block.getSize()) {
+            block.setFree(false);
+            allocations.put(block.getStart(), block);
+            return block.getStart();
+        }
 
         // Ensure block can hold the padding + requested size
         if (block.getSize() < padding + size) {
@@ -303,7 +309,7 @@ public class SimulatedHeap {
         }
 
         // Handle padding to avoid zero sized blocks
-        if (padding > 0 && padding < block.getSize()) {
+        if (padding > 0) {
             // Create a padding block to fill the gap and keep alignment
             MemoryBlock paddingBlock = new MemoryBlock(block.getStart(), padding);
             paddingBlock.setFree(true);
