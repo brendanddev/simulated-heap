@@ -1,5 +1,6 @@
 package brendanddev;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -56,6 +57,25 @@ public class GarbageCollectorTest {
         assertNotNull(blockA, "Root set block should still exist");
         assertFalse(blockA.isFree(), "Root set block should not be freed");
         assertNull(blockB, "Unreachable block should be collected");
+    }
+
+    /**
+     * Tests that garbage collection does not collect blocks that are still reachable.
+     */
+    @Test
+    public void testNoGarbageToCollect() {
+        Integer ptrA = heap.malloc(16);
+        Integer ptrB = heap.malloc(16);
+        
+        // Add both to root set
+        rootSet.add(ptrA);
+        rootSet.add(ptrB);
+        
+        int blocksBeforeGC = heap.getAllocations().size();
+        gc.collect();
+        int blocksAfterGC = heap.getAllocations().size();
+        
+        assertEquals(blocksBeforeGC, blocksAfterGC, "No blocks should be collected when all are reachable");
     }
     
 }
