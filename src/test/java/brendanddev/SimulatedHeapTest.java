@@ -295,5 +295,47 @@ public class SimulatedHeapTest {
                     "Double free should throw exception");
     }
 
+    /**
+     * Tests reading and writing to invalid memory addresses.
+     */
+    @Test
+    public void testInvalidMemoryAccess() {
+        Integer ptr = heap.malloc(16);
+        
+        // Try to access freed memory
+        heap.free(ptr);
+        assertThrows(IllegalArgumentException.class, () -> heap.read(ptr), 
+                    "Reading freed memory should fail");
+        assertThrows(IllegalArgumentException.class, () -> heap.write(ptr, (byte) 1), 
+                    "Writing to freed memory should fail");
+        
+        // Try to access unallocated memory
+        assertThrows(IllegalArgumentException.class, () -> heap.read(999), 
+                    "Reading unallocated memory should fail");
+        assertThrows(IllegalArgumentException.class, () -> heap.write(999, (byte) 1), 
+                    "Writing to unallocated memory should fail");
+    }
+
+    /**
+     * Tests reading and writing at the boundaries of allocated blocks.
+     */
+    @Test
+    public void testBoundaryAccess() {
+        Integer ptr = heap.malloc(16);
+        
+        // Test boundary reads/writes to first and last byte of allocated block
+        heap.write(ptr, (byte) 1);
+        heap.write(ptr + 15, (byte) 2);
+        
+        assertEquals(1, heap.read(ptr));
+        assertEquals(2, heap.read(ptr + 15));
+        
+        // Try to access just outside the allocated block
+        assertThrows(IllegalArgumentException.class, () -> heap.read(ptr + 16), 
+                    "Reading past allocated block should fail");
+        assertThrows(IllegalArgumentException.class, () -> heap.write(ptr + 16, (byte) 1), 
+                    "Writing past allocated block should fail");
+    }
+
     
 }
