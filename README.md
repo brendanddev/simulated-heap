@@ -17,6 +17,7 @@ Instead of letting the JVM handle allocation and garbage collection automaticall
 - **Heap Visualization**: `printHeap()` shows the current state of the heap for debugging.
 - **Garbage Collection Visualization**: `GCVisualizer` provides a graphical view of heap changes during GC cycles.
 - **Memory Alignment**: All allocations are aligned to 8-byte boundaries (configurable via `ALIGNMENT_SIZE`), ensuring proper memory layout.
+- **Unit Tests**: Automated tests verify allocation, freeing, reading/writing, and memory alignment.
 - **Demo Program**: `Main.java` runs a sequence of allocations/frees to show heap changes in action.  
 
 ---
@@ -92,4 +93,14 @@ rootSet.add(b);            // mark block 'b' as reachable
 GarbageCollector gc = new GarbageCollector(heap, rootSet);
 gc.collect();
 heap.printHeap();          // only reachable blocks remain allocated
+```
+
+---
+
+## Testing
+
+Use Maven to run all tests:
+
+```bash
+mvn test
 ```
