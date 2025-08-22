@@ -370,6 +370,51 @@ public class SimulatedHeap {
     }
 
     /**
+     * Allocates memory from a given block while ensuring alignment.
+     * 
+     * @param block The free MemoryBlock to allocate from.
+     * @param size The requested size of memory to allocate.
+     * @return
+     */
+    private Integer allocateFromBlock(MemoryBlock block, int size) {
+
+        int alignedStart = alignAddress(block.getStart());
+        int padding = alignedStart - block.getStart();
+
+        // Ensure block can hold the padding + requested size
+        if (block.getSize() < padding + size) {
+            return null;
+        }
+
+        // Handle padding to avoid zero sized blocks
+        if (padding > 0 && padding < block.getSize()) {
+            // Create a padding block to fill the gap and keep alignment
+            MemoryBlock paddingBlock = new MemoryBlock(block.getStart(), padding);
+            paddingBlock.setFree(true);
+
+            // Insert the padding block before current block
+            int idx = blocks.indexOf(block);
+            blocks.add(idx, paddingBlock);
+
+            // Adjust original block to skip the padding
+            block.setStart(alignedStart);
+            block.setSize(block.getSize() - padding);
+        }
+
+        // If block is larger than needed, split off remainder
+        if (block.getSize() > size) {
+            MemoryBlock remainderBlock = new MemoryBlock(block.getStart() + size, block.getSize() - size);
+            blocks.add(blocks.indexOf(block) + 1, remainderBlock);
+            block.setSize(size);
+        }
+
+        // Mark block as allocated and track it
+        block.setFree(false);
+        allocations.put(block.getStart(), block);
+        return block.getStart();
+    }
+
+    /**
      * Sets the allocation strategy for future malloc calls.
      * 
      * @param strategy The allocation strategy to use (FIRST_FIT or BEST_FIT).
