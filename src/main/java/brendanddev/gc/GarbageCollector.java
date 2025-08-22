@@ -1,7 +1,10 @@
-package brendanddev;
+package brendanddev.gc;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import brendanddev.heap.MemoryBlock;
+import brendanddev.heap.SimulatedHeap;
 
 /**
  * A simulated GarbageCollector that manages memory in a simulated heap.

@@ -1,6 +1,8 @@
-package brendanddev;
+package brendanddev.visualization;
 
 import java.util.List;
+import brendanddev.heap.SimulatedHeap;
+import brendanddev.heap.MemoryBlock;
 
 /**
  * Provides methods to display basic statistics about the SimulatedHeap after or during garbage collection.

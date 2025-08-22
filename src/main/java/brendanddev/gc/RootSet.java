@@ -1,4 +1,4 @@
-package brendanddev;
+package brendanddev.gc;
 
 import java.util.HashSet;
 import java.util.Set;

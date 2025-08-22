@@ -1,4 +1,4 @@
-package brendanddev;
+package brendanddev.heap;
 
 import java.util.ArrayList;
 import java.util.List;

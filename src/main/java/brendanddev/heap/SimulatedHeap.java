@@ -1,9 +1,12 @@
-package brendanddev;
+package brendanddev.heap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import brendanddev.gc.RootSet;
+import brendanddev.visualization.HeapVisualizer;
 
 /**
  * Simulates a Heap in Java using a byte array.

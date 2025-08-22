@@ -1,4 +1,4 @@
-package brendanddev;
+package brendanddev.heap;
 
 /**
  * Defines the allocation strategies available for memory management.

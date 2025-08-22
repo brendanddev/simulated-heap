@@ -1,5 +1,10 @@
 package brendanddev;
 
+import brendanddev.gc.GarbageCollector;
+import brendanddev.heap.AllocationStrategy;
+import brendanddev.heap.SimulatedHeap;
+import brendanddev.visualization.GCVisualizer;
+
 /**
  * Demonstrates the SimulatedHeap 
  */

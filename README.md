@@ -44,13 +44,20 @@ Instead of letting the JVM handle allocation and garbage collection automaticall
 simulated-heap/
 │
 ├─ src/main/java/brendanddev/
-│   ├─ SimulatedHeap.java
-│   ├─ MemoryBlock.java
-│   ├─ RootSet.java
-│   ├─ GarbageCollector.java
-│   ├─ HeapVisualizer.java
-│   ├─ AllocationStrategy.java
-│   └─ Main.java
+│   ├─ heap/                 # Core memory management
+│   │   ├─ SimulatedHeap.java
+│   │   ├─ MemoryBlock.java
+│   │   └─ AllocationStrategy.java
+│   │
+│   ├─ gc/                   # Garbage collection components
+│   │   ├─ GarbageCollector.java
+│   │   └─ RootSet.java
+│   │
+│   ├─ visualization/        # Visualization tools
+│   │   ├─ HeapVisualizer.java
+│   │   └─ GCVisualizer.java
+│   │
+│   └─ Main.java             # Demo entry point
 │
 ├─ pom.xml
 └─ README.md
