@@ -9,7 +9,7 @@ Instead of letting the JVM handle allocation and garbage collection automaticall
 
 - **Custom Heap Simulation**: Backed by a simple `byte[]` array
 - **Memory Blocks**: Tracks allocated and free chunks of memory (`MemoryBlock` class)
-- **Manual Allocation (`malloc`)**: First-fit, Best-fit, or Worst-fit allocation strategies can be used to allocate memory blocks.
+- **Manual Allocation (`malloc`)**: First-fit, Best-fit, Worst-fit, or Next-fit allocation strategies can be used to allocate memory blocks.
 - **Manual Deallocation (`free`)**: Supports freeing blocks and coalescing adjacent free blocks to reduce fragmentation.
 - **Simulated Pointers**: Each `MemoryBlock` can reference other blocks.
 - **Root Set Management**: `RootSet` tracks reachable memory blocks to prevent collection.

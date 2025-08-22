@@ -18,6 +18,7 @@ public class SimulatedHeap {
     private final List<MemoryBlock> blocks;
     private final Map<Integer, MemoryBlock> allocations = new HashMap<>();
     private final RootSet rootSet = new RootSet();
+    private int lastAllocationIndex = 0;
 
     /**
      * Constructs a new SimulatedHeap with the specified size.
@@ -86,6 +87,8 @@ public class SimulatedHeap {
                 return mallocBestFit(size);
             case WORST_FIT:
                 return mallocWorstFit(size);
+            case NEXT_FIT:
+                return mallocNextFit(size);
             default:
                 throw new IllegalStateException("Unknown allocation strategy: " + strategy);
         }
@@ -208,6 +211,47 @@ public class SimulatedHeap {
         worstBlock.setFree(false);
         allocations.put(worstBlock.getStart(), worstBlock);
         return worstBlock.getStart();
+    }
+
+    /**
+     * Allocates a block of memory using the next-fit strategy.
+     * Unlike the first-fit strategy, this approach remembers where the last allocation was made,
+     * and continues searching from there, wrapping around if necessary.
+     * 
+     * @param size The number of bytes to allocate.
+     * @return The starting address of the allocated memory block, or null if allocation fails.
+     */
+    public Integer mallocNextFit(int size) {
+        // Total blocks in the heap and starting index for search
+        int n = blocks.size();
+        int startIndex = lastAllocationIndex;
+
+        // Search through all blocks, wrapping around with modulo
+        for (int i = 0; i < n; i++) {
+            int index = (startIndex + i) % n;
+            MemoryBlock block = blocks.get(index);
+
+            // Check if the block is free and has enough size
+            if (block.isFree() && block.getSize() >= size) {
+                // If block is larger than needed, split it
+                if (block.getSize() > size) {
+                    MemoryBlock newBlock = new MemoryBlock(block.getStart() + size, block.getSize() - size);
+                    blocks.add(index + 1, newBlock);
+                    block.setSize(size);
+                }
+
+                // Mark the block as allocated
+                block.setFree(false);
+                allocations.put(block.getStart(), block);
+
+                // Update the last allocation index
+                lastAllocationIndex = index;
+
+                return block.getStart();
+            }
+        }
+        // No suitable block found
+        return null;
     }
 
     /**
