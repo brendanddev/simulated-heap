@@ -84,6 +84,8 @@ public class SimulatedHeap {
                 return mallocFirstFit(size);
             case BEST_FIT:
                 return mallocBestFit(size);
+            case WORST_FIT:
+                return mallocWorstFit(size);
             default:
                 throw new IllegalStateException("Unknown allocation strategy: " + strategy);
         }
@@ -170,6 +172,42 @@ public class SimulatedHeap {
 
         // Return the starting index as the 'pointer' to the allocated block
         return bestBlock.getStart();
+    }
+
+    /**
+     * Allocates a block of memory using the worst-fit strategy.
+     * 
+     * @param size The number of bytes requested to allocate.
+     * @return The starting address of the allocated block, or null if no block is large enough.
+     */
+    public Integer mallocWorstFit(int size) {
+        // Keep track of largest suitable free block found so far
+        MemoryBlock worstBlock = null;
+
+        for (MemoryBlock block : blocks) {
+            // Check if block is free and large enough
+            if (block.isFree() && block.getSize() >= size) {
+                // If no candidate yet, or this block is bigger than the current worstBlock, pick this one
+                if (worstBlock == null || block.getSize() > worstBlock.getSize()) {
+                    worstBlock = block;
+                }
+            }
+        }
+
+        // If no free block found that fits, allocation fails
+        if (worstBlock == null) return null;
+
+        // If chosen block is larger than needed, split it
+        if (worstBlock.getSize() > size) {
+            MemoryBlock newBlock = new MemoryBlock(worstBlock.getStart() + size, worstBlock.getSize() - size);
+            blocks.add(blocks.indexOf(worstBlock) + 1, newBlock);
+            worstBlock.setSize(size);
+        }
+
+        // Mark the block as allocated
+        worstBlock.setFree(false);
+        allocations.put(worstBlock.getStart(), worstBlock);
+        return worstBlock.getStart();
     }
 
     /**

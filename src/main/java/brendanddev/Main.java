@@ -12,7 +12,8 @@ public class Main {
         SimulatedHeap heap = new SimulatedHeap(32);
 
         // Set allocation strategy
-        heap.setAllocationStrategy(AllocationStrategy.FIRST_FIT);
+        // heap.setAllocationStrategy(AllocationStrategy.FIRST_FIT);
+        heap.setAllocationStrategy(AllocationStrategy.WORST_FIT);
 
         // Allocate three blocks
         int a = heap.malloc(8);
