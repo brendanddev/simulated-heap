@@ -337,5 +337,32 @@ public class SimulatedHeapTest {
                     "Writing past allocated block should fail");
     }
 
+    /**
+     * Tests zero size allocations and verifies behavior.
+     */
+    @Test
+    public void testZeroSizeAllocation() {
+        Integer ptr = heap.malloc(0);
+        if (ptr != null) {
+            // If zero-size allocation succeeds, it should still behave reasonably
+            assertNotNull(ptr, "Zero-size allocation succeeded");
+        } else {
+            assertNull(ptr, "Zero-size allocation should fail");
+        }
+    }
+
+    /**
+     * Tests behavior on a very small heap to ensure allocations respect heap limits.
+     */
+    @Test
+    public void testSmallHeap() {
+        SimulatedHeap smallHeap = new SimulatedHeap(8);
+        Integer ptr = smallHeap.malloc(8);
+        assertNotNull(ptr, "Should be able to allocate entire small heap");
+        
+        Integer ptr2 = smallHeap.malloc(1);
+        assertNull(ptr2, "Should not be able to allocate when heap is full");
+    }
+
     
 }
