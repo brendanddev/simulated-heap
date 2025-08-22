@@ -110,5 +110,28 @@ public class SimulatedHeapTest {
         assertEquals(ptr1, ptr4, "First fit should reuse first available block");
     }
 
+    /**
+     * Tests the Best-fit allocation strategy by ensuring that the allocator
+     * chooses the smallest suitable free block for a new allocation request.
+     */
+    @Test
+    public void testBestFitStrategy() {
+        heap.setAllocationStrategy(AllocationStrategy.BEST_FIT);
+        
+        Integer ptr1 = heap.malloc(16);  // [0-15]
+        Integer ptr2 = heap.malloc(32);  // [16-47]
+        Integer ptr3 = heap.malloc(8);   // [48-55]
+        
+        // Creates 16-byte hole
+        heap.free(ptr1);
+        // Creates 32-byte hole
+        heap.free(ptr2);
+        
+        // Request 16 bytes - should use the 16-byte hole (best fit)
+        Integer ptr4 = heap.malloc(16);
+        assertEquals(ptr1, ptr4, "Best fit should choose smallest suitable block");
+    }
+
+
     
 }
