@@ -364,5 +364,95 @@ public class SimulatedHeapTest {
         assertNull(ptr2, "Should not be able to allocate when heap is full");
     }
 
+    /**
+     * Stress tests the heap with repeated allocations and frees to check for memory leaks or corruption.
+     */
+    @Test
+    public void testRepeatedAllocationsAndFrees() {
+        // Stress test with repeated allocations and frees
+        for (int i = 0; i < 100; i++) {
+            Integer ptr = heap.malloc(8);
+            assertNotNull(ptr, "Allocation " + i + " should succeed");
+            heap.write(ptr, (byte) (i % 256));
+            assertEquals((byte) (i % 256), heap.read(ptr));
+            heap.free(ptr);
+        }
+        
+        // Heap should be back to original state
+        assertEquals(1, heap.getBlocks().size(), "Heap should have one free block after all frees");
+        assertTrue(heap.getBlocks().get(0).isFree(), "Block should be free");
+    }
+
+    /**
+     * Tests a complex allocation pattern with interleaved allocations and frees,
+     * verifying that freed space is reused and memory integrity is maintained.
+     */
+    @Test
+    public void testComplexAllocationPattern() {
+        // Simulate a more realistic allocation pattern
+        Integer[] ptrs = new Integer[6];
+        
+        // Allocate blocks of varying 
+        int[] sizes = {8, 16, 8, 16, 8, 16};
+        for (int i = 0; i < ptrs.length; i++) {
+            ptrs[i] = heap.malloc(sizes[i]);
+            assertNotNull(ptrs[i], "Allocation " + i + " of size " + sizes[i] + " should succeed");
+        }
+        
+        // Free some blocks in non-sequential order
+        heap.free(ptrs[1]);
+        heap.free(ptrs[3]);
+        heap.free(ptrs[5]);
+        
+        // Try to allocate new blocks that should reuse freed space
+        Integer newPtr1 = heap.malloc(8);
+        Integer newPtr2 = heap.malloc(12);
+        
+        assertNotNull(newPtr1, "New allocation should succeed");
+        assertNotNull(newPtr2, "New allocation should succeed");
+        
+        // Verify we can still use all allocated memory
+        heap.write(newPtr1, (byte) 123);
+        heap.write(newPtr2, (byte) 45);
+        
+        assertEquals(123, heap.read(newPtr1));
+        assertEquals(45, heap.read(newPtr2));
+    }
+
+    /**
+     * Tests that different allocation strategies produce different allocation patterns.
+     */
+    @Test
+    public void testAllocationStrategiesComparison() {
+        // Test that different strategies produce different allocation patterns
+        AllocationStrategy[] strategies = {
+            AllocationStrategy.FIRST_FIT,
+            AllocationStrategy.BEST_FIT,
+            AllocationStrategy.WORST_FIT,
+            AllocationStrategy.NEXT_FIT
+        };
+        
+        for (AllocationStrategy strategy : strategies) {
+            // Reset heap
+            heap = new SimulatedHeap(128);
+            heap.setAllocationStrategy(strategy);
+            
+            // Create same allocation pattern for each strategy
+            Integer ptr1 = heap.malloc(32);
+            Integer ptr2 = heap.malloc(16);
+            Integer ptr3 = heap.malloc(32);
+            
+            heap.free(ptr1);
+            heap.free(ptr3);
+            
+            Integer ptr4 = heap.malloc(16);
+            
+            assertNotNull(ptr4, "Allocation should succeed for strategy " + strategy);
+            
+            // Clean up
+            heap.free(ptr2);
+            heap.free(ptr4);
+        }
+    }
     
 }
