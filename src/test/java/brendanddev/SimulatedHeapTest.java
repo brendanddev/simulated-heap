@@ -7,6 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.junit.jupiter.api.BeforeEach;
+
+import brendanddev.heap.AllocationStrategy;
 import brendanddev.heap.SimulatedHeap;
 
 /**
@@ -15,22 +18,29 @@ import brendanddev.heap.SimulatedHeap;
  */
 public class SimulatedHeapTest {
 
+    private SimulatedHeap heap;
+
+    /**
+     * Sets up a new SimulatedHeap instance before each test.
+     */
+    @BeforeEach
+    public void setUp() {
+        heap = new SimulatedHeap(128);
+    }
+
     /**
      * Tests malloc and free functionality in the SimulatedHeap.
      */
     @Test
     public void testMallocAndFree() {
-        SimulatedHeap heap = new SimulatedHeap(64);
-
-        // Allocate a block of 16 bytes
+        // Allocate 16 bytes
         Integer ptr = heap.malloc(16);
         assertNotNull(ptr, "Allocation should succeed");
+        assertEquals(0, ptr, "First allocation should start at address 0");
 
-        // Write and read a value
         heap.write(ptr, (byte) 42);
-        assertEquals(42, heap.read(ptr));
+        assertEquals(42, heap.read(ptr), "Should read back written value");
 
-        // Free the allocated block
         heap.free(ptr);
         assertThrows(IllegalArgumentException.class, () -> heap.read(ptr), "Reading freed memory should fail");
     }
@@ -40,13 +50,27 @@ public class SimulatedHeapTest {
      */
     @Test
     public void testMultipleAllocations() {
-        SimulatedHeap heap = new SimulatedHeap(64);
         Integer ptr1 = heap.malloc(16);
-        Integer ptr2 = heap.malloc(16);
+        Integer ptr2 = heap.malloc(24);
+        Integer ptr3 = heap.malloc(8);
 
-        assertNotNull(ptr1, "First allocation should succeed");
-        assertNotNull(ptr2, "Second allocation should succeed");
-        assertNotEquals(ptr1, ptr2, "Allocations should return different pointers");
+        assertNotNull(ptr1);
+        assertNotNull(ptr2);
+        assertNotNull(ptr3);
+
+        // All pointers should be different
+        assertNotEquals(ptr1, ptr2);
+        assertNotEquals(ptr2, ptr3);
+        assertNotEquals(ptr1, ptr3);
+
+        // Should be able to write to all blocks
+        heap.write(ptr1, (byte) 1);
+        heap.write(ptr2, (byte) 2);
+        heap.write(ptr3, (byte) 3);
+
+        assertEquals(1, heap.read(ptr1));
+        assertEquals(2, heap.read(ptr2));
+        assertEquals(3, heap.read(ptr3));
     }
 
     /**
@@ -54,9 +78,36 @@ public class SimulatedHeapTest {
      */
     @Test
     public void testMemoryAlignment() {
-        SimulatedHeap heap = new SimulatedHeap(64);
-        Integer ptr = heap.malloc(10);
-        assertEquals(0, ptr % 8, "Allocation should be aligned to 8 bytes");
+        for (int size = 1; size <= 32; size++) {
+            // Reset for each test
+            heap = new SimulatedHeap(128);
+            Integer ptr = heap.malloc(size);
+            assertNotNull(ptr, "Allocation of size " + size + " should succeed");
+            assertEquals(0, ptr % 8, "Address " + ptr + " should be 8-byte aligned for size " + size);
+        }
+    }
+
+    /**
+     * Tests the First-fit allocation strategy by allocating multiple blocks,
+     * freeing some to create holes, and verifying that the allocator reuses the 
+     * first available block rather than later ones.
+     */
+    @Test 
+    public void testFirstFitStrategy() {
+        heap.setAllocationStrategy(AllocationStrategy.FIRST_FIT);
+
+        Integer ptr1 = heap.malloc(32);  // [0-31]
+        Integer ptr2 = heap.malloc(32);  // [32-63]
+        Integer ptr3 = heap.malloc(32);  // [64-95]
+        
+        // Free [0-31], creates hole at beginning
+        heap.free(ptr1);
+        // Free [64-95], creates hole at end
+        heap.free(ptr3);
+        
+        // First fit should use the first available hole (at beginning)
+        Integer ptr4 = heap.malloc(16);
+        assertEquals(ptr1, ptr4, "First fit should reuse first available block");
     }
 
     
