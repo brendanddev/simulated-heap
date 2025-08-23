@@ -16,7 +16,7 @@ import brendanddev.heap.SimulatedHeap;
 
 /**
  * Unit tests for the GarbageCollector class.
- * Tests 
+ * Tests that the garbage collector correctly identifies and collects unreachable memory blocks in the heap.
  * 
  */
 public class GarbageCollectorTest {
@@ -122,5 +122,36 @@ public class GarbageCollectorTest {
         assertNotNull(heap.findBlock(ptrB), "Block B should be reachable through A");
         assertNotNull(heap.findBlock(ptrC), "Block C should be reachable through B");
     }
+
+    /**
+     * Tests that an isolated block not part of a refernece chain is correctly identified and collected
+     * by the garbage collector.
+     */
+    @Test
+    public void testBrokenReferenceChain() {
+
+        // a --> b --> c  d
+        Integer ptrA = heap.malloc(16);
+        Integer ptrB = heap.malloc(16);
+        Integer ptrC = heap.malloc(16);
+        Integer ptrD = heap.malloc(16);
+        
+        // Set up partial reference chain
+        heap.findBlock(ptrA).addReference(ptrB);
+        heap.findBlock(ptrB).addReference(ptrC);
+        // ptrD has no references to it
+        
+        rootSet.add(ptrA);
+        
+        gc.collect();
+        
+        // A, B, C should be reachable, D should be collected
+        assertNotNull(heap.findBlock(ptrA), "Block A should be reachable");
+        assertNotNull(heap.findBlock(ptrB), "Block B should be reachable");
+        assertNotNull(heap.findBlock(ptrC), "Block C should be reachable");
+        assertNull(heap.findBlock(ptrD), "Block D should be collected");
+    }
+
+
     
 }
