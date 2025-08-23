@@ -202,6 +202,29 @@ public class GarbageCollectorTest {
         assertNotNull(heap.findBlock(ptrB), "Block B should be reachable");
     }
 
+    /**
+     * Tests that unreachable circular references (a --> b --> a) without any root references
+     * are correctly collected when no block in the cycle is in the root set.
+     */
+    @Test
+    public void testUnreachableCircularReference() {
+        Integer ptrA = heap.malloc(16);
+        Integer ptrB = heap.malloc(16);
+        Integer ptrC = heap.malloc(16);
+        
+        heap.findBlock(ptrA).addReference(ptrB);
+        heap.findBlock(ptrB).addReference(ptrA);
+        
+        // Only C is in root set
+        rootSet.add(ptrC);
+        
+        gc.collect();
+        
+        assertNull(heap.findBlock(ptrA), "Block A should be collected");
+        assertNull(heap.findBlock(ptrB), "Block B should be collected");
+        assertNotNull(heap.findBlock(ptrC), "Block C should remain");
+    }
+
 
     
 }
