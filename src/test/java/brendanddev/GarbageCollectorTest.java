@@ -152,6 +152,56 @@ public class GarbageCollectorTest {
         assertNull(heap.findBlock(ptrD), "Block D should be collected");
     }
 
+    /**
+     * Tests garbage collection on a more complex reference graph with multiple references and an isolated block.
+     */
+    @Test
+    public void testComplexReferenceGraph() {
+        // a --> b, a --> c, b --> d, c --> d,    e
+        Integer ptrA = heap.malloc(16);
+        Integer ptrB = heap.malloc(16);
+        Integer ptrC = heap.malloc(16);
+        Integer ptrD = heap.malloc(16);
+        Integer ptrE = heap.malloc(16);
+        
+        heap.findBlock(ptrA).addReference(ptrB);
+        heap.findBlock(ptrA).addReference(ptrC);
+        heap.findBlock(ptrB).addReference(ptrD);
+        heap.findBlock(ptrC).addReference(ptrD);
+        
+        rootSet.add(ptrA);
+        
+        gc.collect();
+        
+        // A, B, C, D should be reachable, E should be collected
+        assertNotNull(heap.findBlock(ptrA), "Block A should be reachable");
+        assertNotNull(heap.findBlock(ptrB), "Block B should be reachable");
+        assertNotNull(heap.findBlock(ptrC), "Block C should be reachable");
+        assertNotNull(heap.findBlock(ptrD), "Block D should be reachable");
+        assertNull(heap.findBlock(ptrE), "Block E should be collected");
+    }
+
+    /**
+     * Tests that circular references are handled correctly by the garbage collector.
+     */
+    @Test
+    public void testSimpleCircularReference() {
+        // Circular reference: a --> b --> a
+        Integer ptrA = heap.malloc(16);
+        Integer ptrB = heap.malloc(16);
+        
+        heap.findBlock(ptrA).addReference(ptrB);
+        heap.findBlock(ptrB).addReference(ptrA);
+        
+        rootSet.add(ptrA);
+        
+        gc.collect();
+        
+        // Both blocks should survive due to root reference
+        assertNotNull(heap.findBlock(ptrA), "Block A should be reachable");
+        assertNotNull(heap.findBlock(ptrB), "Block B should be reachable");
+    }
+
 
     
 }
